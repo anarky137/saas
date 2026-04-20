@@ -10,13 +10,13 @@ import { AppCqrsModule } from './cqrs/cqrs.module';
 
 @Module({
   imports: [
-    DatabaseModule,
-    CryptoModule,
-    RedisModule,
+    DatabaseModule.forRoot(),
+    CryptoModule.forRoot(),
+    RedisModule.forRoot(),
     HealthModule,
     GraphQLModule,
-    KafkaModule,
-    QueueModule,
+    KafkaModule.forRoot(),
+    QueueModule.forRoot(),
     AppCqrsModule,
   ],
   exports: [
