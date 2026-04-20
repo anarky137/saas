@@ -13,6 +13,7 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
+    "@nestjs/cqrs": "^11.0.0",
     "@org/shared": "workspace:*",
     "@org/contracts": "workspace:*"
   }
