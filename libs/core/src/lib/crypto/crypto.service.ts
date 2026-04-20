@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import { randomBytes, createHash } from 'crypto';
 
 export interface HashResult {
@@ -9,16 +8,12 @@ export interface HashResult {
 
 @Injectable()
 export class CryptoService {
-  private readonly SALT_ROUNDS = 12;
-
-  async hash(password: string): Promise<HashResult> {
-    const salt = await bcrypt.genSalt(this.SALT_ROUNDS);
-    const hash = await bcrypt.hash(password, salt);
-    return { hash, salt };
+  async hash(_password: string): Promise<HashResult> {
+    throw new Error('Crypto module requires bcrypt package');
   }
 
-  async compare(password: string, hash: string): Promise<boolean> {
-    return bcrypt.compare(password, hash);
+  async compare(_password: string, _hash: string): Promise<boolean> {
+    throw new Error('Crypto module requires bcrypt package');
   }
 
   generateToken(length: number = 32): string {

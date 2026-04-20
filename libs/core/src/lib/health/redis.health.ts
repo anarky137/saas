@@ -11,15 +11,8 @@ export class RedisHealthCheck extends HealthCheck {
   readonly name = 'redis';
 
   protected async performCheck(): Promise<Partial<HealthCheckResponse>> {
-    const client = await this.getClient();
     const start = Date.now();
-    await client.ping();
-    const latency = Date.now() - start;
-
-    return { latency };
-  }
-
-  private async getClient() {
-    return this.redis.getClient('health');
+    await this.redis.ping();
+    return { latency: Date.now() - start };
   }
 }

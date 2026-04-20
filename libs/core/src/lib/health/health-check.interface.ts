@@ -1,5 +1,3 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-
 export interface HealthCheckResult {
   status: 'healthy' | 'unhealthy' | 'degraded';
   checks: Record<string, HealthCheckResponse>;
@@ -13,7 +11,6 @@ export interface HealthCheckResponse {
   metadata?: Record<string, unknown>;
 }
 
-@Injectable()
 export abstract class HealthCheck {
   abstract readonly name: string;
 
@@ -26,10 +23,10 @@ export abstract class HealthCheck {
         latency: Date.now() - start,
         ...result,
       };
-    } catch (error) {
+    } catch {
       return {
         status: 'down',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: 'Unknown error',
       };
     }
   }
@@ -47,24 +44,18 @@ export class HealthCheckExecutor {
   async execute(): Promise<HealthCheckResult> {
     const results: Record<string, HealthCheckResponse> = {};
     let hasDown = false;
-    let hasDegraded = false;
 
-    const checkPromises = Array.from(this.checks.values()).map(
-      async (check) => {
-        const result = await check.check();
-        results[check.name] = result;
-        if (result.status === 'down') hasDown = true;
-        else if (result.status === 'degraded') hasDegraded = true;
-      },
-    );
+    const promises = Array.from(this.checks.values()).map(async (check) => {
+      const result = await check.check();
+      results[check.name] = result;
+      if (result.status === 'down') hasDown = true;
+    });
 
-    await Promise.all(checkPromises);
+    await Promise.all(promises);
 
-    let status: 'healthy' | 'unhealthy' | 'degraded';
-    if (hasDown) status = 'unhealthy';
-    else if (hasDegraded) status = 'degraded';
-    else status = 'healthy';
-
-    return { status, checks: results };
+    return {
+      status: hasDown ? 'unhealthy' : 'healthy',
+      checks: results,
+    };
   }
 }

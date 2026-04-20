@@ -1,12 +1,12 @@
-import { Module } from '@nestjs/common';
-import { CqrsModule as NestCqrsModule } from '@nestjs/cqrs';
+import { Module, DynamicModule } from '@nestjs/common';
 
-export const COMMANDS = [];
-export const QUERIES = [];
-export const EVENT_HANDLERS = [];
-
-@Module({
-  imports: [NestCqrsModule],
-  exports: [NestCqrsModule],
-})
-export class AppCqrsModule {}
+@Module({})
+export class AppCqrsModule {
+  static forRoot(): DynamicModule {
+    return {
+      module: AppCqrsModule,
+      providers: [],
+      exports: [],
+    };
+  }
+}

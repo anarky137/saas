@@ -1,4 +1,10 @@
-import { Module, Global, DynamicModule, ValueProvider } from '@nestjs/common';
+import {
+  Module,
+  Global,
+  DynamicModule,
+  Type,
+  ForwardReference,
+} from '@nestjs/common';
 import { RedisService } from './redis.service';
 
 export interface RedisModuleOptions {
@@ -12,20 +18,10 @@ export interface RedisModuleOptions {
 
 export interface RedisModuleAsyncOptions {
   useFactory: () => Promise<RedisModuleOptions> | RedisModuleOptions;
-  imports?: Function[];
+  imports?: (Type<unknown> | DynamicModule | ForwardReference)[];
 }
 
 const REDIS_OPTIONS = 'REDIS_OPTIONS';
-
-export const RedisOptionsProvider: ValueProvider<RedisModuleOptions> = {
-  provide: REDIS_OPTIONS,
-  useValue: {
-    host: process.env.REDIS_HOST ?? 'localhost',
-    port: parseInt(process.env.REDIS_PORT ?? '6379'),
-    password: process.env.REDIS_PASSWORD,
-    db: parseInt(process.env.REDIS_DB ?? '0'),
-  },
-};
 
 @Global()
 @Module({})
@@ -74,18 +70,11 @@ export class RedisModule {
     };
   }
 
-  static forFeature(name: string = 'default'): DynamicModule {
+  static forFeature(_name: string = 'default'): DynamicModule {
     return {
       module: RedisModule,
-      providers: [
-        {
-          provide: `REDIS_CLIENT_${name.toUpperCase()}`,
-          useFactory: (redisService: RedisService) =>
-            redisService.getClient(name),
-          inject: [RedisService],
-        },
-      ],
-      exports: [`REDIS_CLIENT_${name.toUpperCase()}`],
+      providers: [],
+      exports: [],
     };
   }
 }

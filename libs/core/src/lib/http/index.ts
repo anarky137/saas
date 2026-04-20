@@ -1,3 +1,3 @@
-export * from './http.interface';
-export * from './http.service';
-export * from './http.module';
+export type { HttpModuleOptions } from './http.interface';
+export { HttpService } from './http.service';
+export { HttpModule } from './http.module';
