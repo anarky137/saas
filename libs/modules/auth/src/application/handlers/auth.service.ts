@@ -1,29 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { Account } from '../../domain/entities/account';
-import {
-  AuthProvider,
-  AuthProviderType,
-  AuthProviderProps,
-} from '../../domain/entities/auth-provider';
-import { Session, SessionProps } from '../../domain/entities/session';
-import {
+import { Account } from '../../domain/entities/account.js';
+import type { AuthProviderProps } from '../../domain/entities/auth-provider.js';
+import { Session, SessionProps } from '../../domain/entities/session.js';
+import type {
   AccountRepositoryPort,
   SessionRepositoryPort,
   TokenServicePort,
   TokenPair,
-} from '../../domain/ports';
+} from '../../domain/ports/index.js';
 import {
   CreateAccountCommand,
   LoginCommand,
   RefreshTokenCommand,
   RevokeSessionCommand,
   RevokeAllSessionsCommand,
-} from '../commands';
+} from '../commands/index.js';
 import {
   GetAccountByIdQuery,
   GetSessionsByAccountIdQuery,
   VerifyTokenQuery,
-} from '../queries';
+} from '../queries/index.js';
 
 @Injectable()
 export class AuthService {
@@ -37,7 +33,6 @@ export class AuthService {
     cmd: CreateAccountCommand,
   ): Promise<{ account: Account; tokens: TokenPair }> {
     let account: Account;
-    let provider: AuthProvider;
 
     const existingProvider = null;
 
@@ -48,10 +43,10 @@ export class AuthService {
       }
     } else {
       const now = new Date();
-      const accountProps: AccountProps = {
+      const accountProps = {
         id: crypto.randomUUID(),
         userId: cmd.userId,
-        status: 'active',
+        status: 'active' as const,
         isEmailVerified: cmd.provider === 'email',
         lastLoginAt: null,
         lastLoginIp: null,
@@ -73,7 +68,6 @@ export class AuthService {
         createdAt: now,
         updatedAt: now,
       };
-      provider = new AuthProvider(providerProps);
     }
 
     const tokens = this.tokenService.generateTokenPair(
@@ -91,11 +85,11 @@ export class AuthService {
       deviceInfo: 'unknown',
       ipAddress: null,
       userAgent: null,
-      status: 'active',
+      status: 'active' as const,
       expiresAt,
       revokedAt: null,
       revokedReason: null,
-      createdAt: now,
+      createdAt: new Date(),
     };
     const session = new Session(sessionProps);
     await this.sessionRepo.save(session);
@@ -136,7 +130,7 @@ export class AuthService {
       deviceInfo: cmd.deviceInfo,
       ipAddress: cmd.ipAddress,
       userAgent: cmd.userAgent,
-      status: 'active',
+      status: 'active' as const,
       expiresAt,
       revokedAt: null,
       revokedReason: null,
@@ -185,7 +179,7 @@ export class AuthService {
       throw new Error('Session not found');
     }
 
-    session.revoke(cmd.reason ?? undefined);
+    session.revoke(cmd.reason);
     await this.sessionRepo.save(session);
   }
 
@@ -193,7 +187,7 @@ export class AuthService {
     const sessions = await this.sessionRepo.findByAccountId(cmd.accountId);
     for (const session of sessions) {
       if (session.isActive()) {
-        session.revoke(cmd.reason ?? undefined);
+        session.revoke(cmd.reason);
         await this.sessionRepo.save(session);
       }
     }
