@@ -1,5 +1,6 @@
 export * from './lib/constants.js';
 export * from './lib/config.js';
+export * from './lib/utils.js';
 export { ENV, PORT, APP, SERVICE } from './lib/config.js';
 export {
   getDatabaseConfig,
