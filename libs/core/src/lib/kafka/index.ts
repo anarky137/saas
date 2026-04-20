@@ -7,6 +7,16 @@ export type {
   IKafkaConsumer,
 } from './kafka.interface.js';
 export { KafkaEventBus, kafkaRetryConfig } from './kafka-event-bus.js';
-export type { ProcessorHandler, EventPayload } from './kafka.processor.js';
-export { KafkaProcessor, createEvent } from './kafka.processor.js';
+export type {
+  ProcessorHandler,
+  EventPayload,
+  KafkaProcessorOptions,
+} from './kafka.processor.js';
+export {
+  KafkaProcessor,
+  createEvent,
+  DEFAULT_DLQ_TOPIC,
+  MAX_RETRIES,
+  RETRY_DELAY_MS,
+} from './kafka.processor.js';
 export { KafkaModule } from './kafka.module.js';
