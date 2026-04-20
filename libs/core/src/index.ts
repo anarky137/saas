@@ -8,3 +8,5 @@ export * from './lib/graphql';
 export * from './lib/cqrs';
 export * from './lib/kafka';
 export * from './lib/queue';
+export * from './lib/http';
+export * from './lib/grpc';

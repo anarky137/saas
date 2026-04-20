@@ -1,3 +1,3 @@
-export * from './config.loader';
-export * from './env.decorators';
-export * from './env-validation.config';
+export * from './config.interface';
+export * from './config.service';
+export * from './config.module';
