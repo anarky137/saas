@@ -1,3 +1,3 @@
-export type { GrpcClientOptions, GrpcServerOptions } from './grpc.interface';
-export { GrpcService } from './grpc.service';
-export { GrpcModule } from './grpc.module';
+export type { GrpcClientOptions, GrpcServerOptions } from './grpc.interface.js';
+export { GrpcServer, GrpcClientService } from './grpc.service.js';
+export { GrpcModule } from './grpc.module.js';

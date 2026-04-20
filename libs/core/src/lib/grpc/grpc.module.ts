@@ -1,9 +1,6 @@
 import { DynamicModule, Module, Global } from '@nestjs/common';
-import {
-  GrpcClientOptions,
-  GrpcServerOptions,
-  GRPC_SERVER_OPTIONS,
-} from './grpc.interface';
+import { GrpcServer, GrpcClientService } from './grpc.service.js';
+import type { GrpcClientOptions, GrpcServerOptions } from './grpc.interface.js';
 
 @Global()
 @Module({})
@@ -11,35 +8,25 @@ export class GrpcModule {
   static forClient(_options: GrpcClientOptions): DynamicModule {
     return {
       module: GrpcModule,
-      providers: [],
-      exports: [],
+      providers: [GrpcClientService],
+      exports: [GrpcClientService],
     };
   }
 
-  static forServer(options: GrpcServerOptions): DynamicModule {
+  static forServer(_options: GrpcServerOptions): DynamicModule {
     return {
       module: GrpcModule,
-      providers: [
-        {
-          provide: GRPC_SERVER_OPTIONS,
-          useValue: options,
-        },
-      ],
-      exports: [],
+      providers: [GrpcServer],
+      exports: [GrpcServer],
     };
   }
 
-  static forRoot(options: GrpcServerOptions): DynamicModule {
+  static forRoot(): DynamicModule {
     return {
       module: GrpcModule,
       global: true,
-      providers: [
-        {
-          provide: GRPC_SERVER_OPTIONS,
-          useValue: options,
-        },
-      ],
-      exports: [],
+      providers: [GrpcServer, GrpcClientService],
+      exports: [GrpcServer, GrpcClientService],
     };
   }
 }

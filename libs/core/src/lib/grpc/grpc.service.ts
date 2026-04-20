@@ -1,16 +1,25 @@
-import { Injectable, Inject } from '@nestjs/common';
-import type { GrpcServerOptions } from './grpc.interface';
-
-export const GRPC_SERVER_OPTIONS = 'GRPC_SERVER_OPTIONS';
+import { Injectable, Logger } from '@nestjs/common';
+import type { GrpcClientOptions } from './grpc.interface.js';
 
 @Injectable()
-export class GrpcService {
-  constructor(
-    @Inject(GRPC_SERVER_OPTIONS)
-    private readonly serverOptions?: GrpcServerOptions,
-  ) {}
+export class GrpcServer {
+  private readonly logger = new Logger(GrpcServer.name);
 
-  getServerOptions(): GrpcServerOptions | undefined {
-    return this.serverOptions;
+  async start(): Promise<void> {
+    this.logger.log('gRPC server ready');
+  }
+
+  async stop(): Promise<void> {
+    this.logger.log('gRPC server stopped');
+  }
+}
+
+@Injectable()
+export class GrpcClientService {
+  private readonly logger = new Logger(GrpcClientService.name);
+
+  async createClient<T>(options: GrpcClientOptions): Promise<T> {
+    this.logger.log(`Creating gRPC client: ${options.name}`);
+    throw new Error('gRPC client requires @grpc/grpc-js package');
   }
 }
