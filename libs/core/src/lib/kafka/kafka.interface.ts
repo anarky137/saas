@@ -1,6 +1,7 @@
 import { InjectionToken } from '@nestjs/common';
 
 export const KAFKA_PRODUCER = Symbol.for('IKafkaProducer') as InjectionToken;
+export const KAFKA_CONSUMER = Symbol.for('IKafkaConsumer') as InjectionToken;
 
 export interface KafkaConfig {
   clientId: string;

@@ -6,7 +6,7 @@ export type {
   IKafkaProducer,
   IKafkaConsumer,
 } from './kafka.interface.js';
-export { KAFKA_PRODUCER } from './kafka.interface.js';
+export { KAFKA_PRODUCER, KAFKA_CONSUMER } from './kafka.interface.js';
 export { KafkaEventBus, kafkaRetryConfig } from './kafka-event-bus.js';
 export type {
   ProcessorHandler,
