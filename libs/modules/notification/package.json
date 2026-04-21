@@ -9,8 +9,13 @@
       "types": "./src/index.ts",
       "import": "./src/index.ts",
       "default": "./src/index.ts"
-    },
-    "./package.json": "./package.json"
+    }
   },
-  "dependencies": {}
+  "dependencies": {
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/cqrs": "^11.0.0",
+    "@org/core": "workspace:*",
+    "@org/contracts": "workspace:*",
+    "typeorm": "^0.3.20"
+  }
 }
