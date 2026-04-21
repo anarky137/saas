@@ -1,0 +1,14 @@
+node_modules
+dist
+.nx
+.git
+*.log
+.env
+.env.local
+.next
+coverage
+.nyc_output
+.DS_Store
+*.tgz
+.tsbuildinfo
+.cache
