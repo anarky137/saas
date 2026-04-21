@@ -61,3 +61,7 @@ CONTEXT.md
 .cursorignore
  Anthropic
 .claude/
+
+# Build artifacts
+*.tsbuildinfo
+dist/
