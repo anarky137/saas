@@ -9,7 +9,8 @@ export class UserEventListener implements OnModuleInit {
   private readonly logger = new Logger(UserEventListener.name);
 
   constructor(
-    @Inject(KAFKA_CONSUMER) private readonly kafkaConsumer: IKafkaConsumer | undefined,
+    @Inject(KAFKA_CONSUMER)
+    private readonly kafkaConsumer: IKafkaConsumer | undefined,
     private readonly notificationService: NotificationService,
   ) {}
 
@@ -18,14 +19,18 @@ export class UserEventListener implements OnModuleInit {
       this.logger.warn('Kafka consumer not available');
       return;
     }
-    await this.kafkaConsumer.subscribe(['user.events'], this.handleMessage.bind(this));
+    await this.kafkaConsumer.subscribe(
+      'notification-service-group',
+      ['user.events'],
+      this.handleMessage.bind(this),
+    );
     this.logger.log('UserEventListener subscribed to user.events');
   }
 
   private async handleMessage(message: IKafkaMessage): Promise<void> {
     try {
       const event: UserEvent = JSON.parse(message.value as string);
-      
+
       switch (event.type) {
         case 'user.created':
           await this.handleUserCreated(event);

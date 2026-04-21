@@ -11,25 +11,32 @@ export class UserKafkaListener implements OnModuleInit {
   private readonly logger = new Logger(UserKafkaListener.name);
 
   constructor(
-    @Inject(KAFKA_CONSUMER) private readonly kafkaConsumer: IKafkaConsumer | undefined,
+    @Inject(KAFKA_CONSUMER)
+    private readonly kafkaConsumer: IKafkaConsumer | undefined,
     private readonly userService: UserService,
     private readonly eventBus: EventBus,
   ) {}
 
   async onModuleInit(): Promise<void> {
     if (!this.kafkaConsumer) {
-      this.logger.warn('Kafka consumer not available, skipping Kafka listener setup');
+      this.logger.warn(
+        'Kafka consumer not available, skipping Kafka listener setup',
+      );
       return;
     }
 
-    await this.kafkaConsumer.subscribe(['auth.events'], this.handleMessage.bind(this));
+    await this.kafkaConsumer.subscribe(
+      'user-service-group',
+      ['auth.events'],
+      this.handleMessage.bind(this),
+    );
     this.logger.log('UserKafkaListener subscribed to auth.events topic');
   }
 
   private async handleMessage(message: IKafkaMessage): Promise<void> {
     try {
       const event: AuthEvent = JSON.parse(message.value as string);
-      
+
       switch (event.type) {
         case 'user.registered':
           await this.handleUserRegistered(event);
@@ -43,18 +50,19 @@ export class UserKafkaListener implements OnModuleInit {
   }
 
   private async handleUserRegistered(event: AuthEvent): Promise<void> {
-    const payload = event.payload as { accountId: string; email: string | null };
-    
+    const payload = event.payload as {
+      accountId: string;
+      email: string | null;
+    };
+
     const user = await this.userService.createUserFromAccount({
       accountId: payload.accountId,
       email: payload.email,
     });
 
-    this.eventBus.publish(new UserCreatedEvent(
-      user.id,
-      user.accountId,
-      user.email,
-    ));
+    this.eventBus.publish(
+      new UserCreatedEvent(user.id, user.accountId, user.email),
+    );
 
     this.logger.log(`User created from auth event: ${user.id}`);
   }
