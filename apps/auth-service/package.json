@@ -12,11 +12,12 @@
     "@nestjs/cqrs": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
     "@org/auth": "workspace:*",
-    "@org/core": "workspace:*",
     "@org/contracts": "workspace:*",
+    "@org/core": "workspace:*",
     "@org/shared": "workspace:*",
+    "axios": "1.15.1",
     "reflect-metadata": "^0.2.0",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.2"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

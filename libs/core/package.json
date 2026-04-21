@@ -19,12 +19,12 @@
     "@org/contracts": "workspace:*",
     "@org/shared": "workspace:*",
     "argon2": "^0.30.3",
-    "axios": "^1.7.0",
+    "axios": "^1.15.1",
     "ioredis": "^5.4.1",
     "kafkajs": "^2.2.4",
     "pg": "^8.13.0",
     "reflect-metadata": "^0.2.0",
-    "rxjs": "^7.8.1",
+    "rxjs": "^7.8.2",
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
