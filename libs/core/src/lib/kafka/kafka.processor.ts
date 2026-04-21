@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { IKafkaMessage } from './kafka.interface.js';
+import { RETRY } from '@org/shared';
 
 export type ProcessorHandler = (message: IKafkaMessage) => Promise<void>;
 
@@ -24,8 +25,8 @@ export class KafkaProcessor {
   private retryDelay: number;
 
   constructor(options?: KafkaProcessorOptions) {
-    this.maxRetries = options?.maxRetries ?? 3;
-    this.retryDelay = options?.retryDelay ?? 1000;
+    this.maxRetries = options?.maxRetries ?? RETRY.ATTEMPTS;
+    this.retryDelay = options?.retryDelay ?? RETRY.DELAY_MS;
     this.deadLetterTopic = options?.deadLetterTopic;
     this.deadLetterHandler = options?.deadLetterHandler;
   }
@@ -135,4 +136,3 @@ export function createEvent<T>(
 
 export const DEFAULT_DLQ_TOPIC = 'dlq';
 export const MAX_RETRIES = 3;
-export const RETRY_DELAY_MS = 1000;

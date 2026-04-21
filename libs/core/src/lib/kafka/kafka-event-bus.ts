@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { IKafkaMessage, KafkaRetryConfig } from './kafka.interface.js';
+import { RETRY } from '@org/shared';
 
 @Injectable()
 export class KafkaEventBus {
@@ -29,7 +30,7 @@ export class KafkaEventBus {
 }
 
 export const kafkaRetryConfig: KafkaRetryConfig = {
-  initialRetryTime: 1000,
-  maxRetryTime: 10000,
-  retries: 3,
+  initialRetryTime: RETRY.INITIAL_DELAY_MS,
+  maxRetryTime: RETRY.MAX_DELAY_MS,
+  retries: RETRY.ATTEMPTS,
 };

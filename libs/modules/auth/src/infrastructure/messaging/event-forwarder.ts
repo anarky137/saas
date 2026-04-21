@@ -1,54 +1,40 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { EventBus, IEventHandler } from '@nestjs/cqrs';
+import { Injectable, Logger } from '@nestjs/common';
 import type { IKafkaProducer } from '@org/core';
 import type { DomainEvent } from '../../domain/events/index.js';
 import { TOPIC_BY_EVENT_TYPE } from '@org/contracts';
 
 @Injectable()
-export class AuthEventForwarder
-  implements OnModuleInit, IEventHandler<DomainEvent>
-{
+export class AuthEventForwarder {
   private readonly logger = new Logger(AuthEventForwarder.name);
   private readonly forwardedEvents = new Set<string>();
 
-  constructor(
-    private readonly eventBus: EventBus,
-    private readonly kafkaProducer?: IKafkaProducer,
-  ) {}
+  constructor(private readonly kafkaProducer?: IKafkaProducer) {}
 
-  async onModuleInit(): Promise<void> {
-    if (this.kafkaProducer) {
-      this.eventBus.registerHandler(this);
-      this.logger.log('EventForwarder registered to listen for events');
-    }
-  }
-
-  async handle(event: DomainEvent): Promise<void> {
+  async forward(event: DomainEvent): Promise<void> {
     if (!this.kafkaProducer) {
       return;
     }
 
-    if (this.forwardedEvents.has(event.type)) {
+    const eventType = event.constructor.name;
+    if (this.forwardedEvents.has(eventType)) {
       return;
     }
 
     try {
-      const topic = TOPIC_BY_EVENT_TYPE[event.type] ?? 'auth.events';
+      const topic = TOPIC_BY_EVENT_TYPE[eventType] ?? 'auth.events';
       await this.kafkaProducer.send(topic, [
         {
           key: this.getKey(event),
           value: JSON.stringify({
-            type: event.type,
+            type: eventType,
             occurredAt: event.occurredAt.toISOString(),
             payload: this.serialize(event),
           }),
         },
       ]);
-      this.logger.debug(
-        `Forwarded event ${event.type} to Kafka topic ${topic}`,
-      );
+      this.logger.debug(`Forwarded event ${eventType} to Kafka topic ${topic}`);
     } catch (error) {
-      this.logger.error(`Failed to forward event ${event.type}: ${error}`);
+      this.logger.error(`Failed to forward event ${eventType}: ${error}`);
     }
   }
 

@@ -6,6 +6,9 @@ import {
   ForwardReference,
 } from '@nestjs/common';
 import { RedisService } from './redis.service';
+import { ENV, DEFAULT_PORTS } from '@org/shared';
+
+const DEFAULT_REDIS_PORT = DEFAULT_PORTS.REDIS;
 
 export interface RedisModuleOptions {
   host?: string;
@@ -33,10 +36,10 @@ export class RedisModule {
         {
           provide: REDIS_OPTIONS,
           useValue: {
-            host: options.host ?? process.env.REDIS_HOST ?? 'localhost',
-            port: options.port ?? parseInt(process.env.REDIS_PORT ?? '6379'),
-            password: options.password ?? process.env.REDIS_PASSWORD,
-            db: options.db ?? parseInt(process.env.REDIS_DB ?? '0'),
+            host: options.host ?? ENV.REDIS_HOST,
+            port: options.port ?? ENV.REDIS_PORT ?? DEFAULT_REDIS_PORT,
+            password: options.password ?? ENV.REDIS_PASSWORD,
+            db: options.db ?? ENV.REDIS_DB,
             lazyConnect: options.lazyConnect ?? true,
           },
         },
@@ -55,10 +58,10 @@ export class RedisModule {
           useFactory: async () => {
             const opts = await options.useFactory();
             return {
-              host: opts.host ?? process.env.REDIS_HOST ?? 'localhost',
-              port: opts.port ?? parseInt(process.env.REDIS_PORT ?? '6379'),
-              password: opts.password ?? process.env.REDIS_PASSWORD,
-              db: opts.db ?? parseInt(process.env.REDIS_DB ?? '0'),
+              host: opts.host ?? ENV.REDIS_HOST,
+              port: opts.port ?? ENV.REDIS_PORT ?? DEFAULT_REDIS_PORT,
+              password: opts.password ?? ENV.REDIS_PASSWORD,
+              db: opts.db ?? ENV.REDIS_DB,
               lazyConnect: opts.lazyConnect ?? true,
             };
           },

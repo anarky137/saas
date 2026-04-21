@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { Account } from '../../domain/entities/account.js';
-import type { AuthProviderProps } from '../../domain/entities/auth-provider.js';
 import { Session, SessionProps } from '../../domain/entities/session.js';
 import type {
   AccountRepositoryPort,
@@ -32,43 +31,19 @@ export class AuthService {
   async createAccount(
     cmd: CreateAccountCommand,
   ): Promise<{ account: Account; tokens: TokenPair }> {
-    let account: Account;
-
-    const existingProvider = null;
-
-    if (existingProvider) {
-      account = await this.accountRepo.findById(existingProvider.accountId);
-      if (!account) {
-        throw new Error('Account not found for existing provider');
-      }
-    } else {
-      const now = new Date();
-      const accountProps = {
-        id: crypto.randomUUID(),
-        userId: cmd.userId,
-        status: 'active' as const,
-        isEmailVerified: cmd.provider === 'email',
-        lastLoginAt: null,
-        lastLoginIp: null,
-        createdAt: now,
-        updatedAt: now,
-      };
-      account = new Account(accountProps);
-      account = await this.accountRepo.save(account);
-
-      const providerProps: AuthProviderProps = {
-        id: crypto.randomUUID(),
-        accountId: account.id,
-        provider: cmd.provider,
-        providerId: cmd.providerId,
-        email: cmd.email,
-        displayName: cmd.displayName,
-        profileData: null,
-        isActive: true,
-        createdAt: now,
-        updatedAt: now,
-      };
-    }
+    const now = new Date();
+    const accountProps = {
+      id: crypto.randomUUID(),
+      userId: cmd.userId,
+      status: 'active' as const,
+      isEmailVerified: cmd.provider === 'email',
+      lastLoginAt: null,
+      lastLoginIp: null,
+      createdAt: now,
+      updatedAt: now,
+    };
+    const account = new Account(accountProps);
+    await this.accountRepo.save(account);
 
     const tokens = this.tokenService.generateTokenPair(
       { sub: account.id, type: 'access' },
@@ -100,49 +75,8 @@ export class AuthService {
   async login(
     cmd: LoginCommand,
   ): Promise<{ account: Account; tokens: TokenPair }> {
-    const provider = null;
-
-    if (!provider) {
-      throw new Error('Invalid credentials');
-    }
-
-    const account = await this.accountRepo.findById(provider.accountId);
-    if (!account) {
-      throw new Error('Account not found');
-    }
-
-    if (!account.isActive()) {
-      throw new Error('Account is not active');
-    }
-
-    const tokens = this.tokenService.generateTokenPair(
-      { sub: account.id, type: 'access' },
-      3600,
-      604800,
-    );
-
-    const expiresAt = new Date(Date.now() + 604800 * 1000);
-    const sessionProps: SessionProps = {
-      id: crypto.randomUUID(),
-      accountId: account.id,
-      refreshToken: tokens.refreshToken,
-      accessToken: tokens.accessToken,
-      deviceInfo: cmd.deviceInfo,
-      ipAddress: cmd.ipAddress,
-      userAgent: cmd.userAgent,
-      status: 'active' as const,
-      expiresAt,
-      revokedAt: null,
-      revokedReason: null,
-      createdAt: new Date(),
-    };
-    const session = new Session(sessionProps);
-    await this.sessionRepo.save(session);
-
-    account.recordLogin(cmd.ipAddress ?? 'unknown');
-    await this.accountRepo.save(account);
-
-    return { account, tokens };
+    // TODO: Implement actual login with provider
+    throw new Error('Login not implemented');
   }
 
   async refreshToken(cmd: RefreshTokenCommand): Promise<TokenPair> {
@@ -179,7 +113,7 @@ export class AuthService {
       throw new Error('Session not found');
     }
 
-    session.revoke(cmd.reason);
+    session.revoke(cmd.reason ?? undefined);
     await this.sessionRepo.save(session);
   }
 
@@ -187,7 +121,7 @@ export class AuthService {
     const sessions = await this.sessionRepo.findByAccountId(cmd.accountId);
     for (const session of sessions) {
       if (session.isActive()) {
-        session.revoke(cmd.reason);
+        session.revoke(cmd.reason ?? undefined);
         await this.sessionRepo.save(session);
       }
     }

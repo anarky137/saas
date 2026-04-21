@@ -11,41 +11,41 @@ import { AccountOrmEntity } from './account.entity';
 @Entity('auth_providers')
 export class AuthProviderOrmEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ type: 'uuid' })
-  accountId: string;
+  accountId!: string;
 
   @ManyToOne(() => AccountOrmEntity, (account) => account.providers)
-  account: AccountOrmEntity;
+  account!: AccountOrmEntity;
 
   @Column({ type: 'enum', enum: ['email', 'google', 'github', 'telegram'] })
-  provider: 'email' | 'google' | 'github' | 'telegram';
+  provider!: 'email' | 'google' | 'github' | 'telegram';
 
   @Column()
-  providerId: string;
+  providerId!: string;
 
   @Column({ nullable: true })
-  email: string | null;
+  email!: string | null;
 
   @Column({ nullable: true })
-  displayName: string | null;
+  displayName!: string | null;
 
   @Column({ nullable: true, type: 'text' })
-  accessToken: string | null;
+  accessToken!: string | null;
 
   @Column({ nullable: true, type: 'text' })
-  refreshToken: string | null;
+  refreshToken!: string | null;
 
   @Column({ nullable: true, type: 'jsonb' })
-  profileData: Record<string, unknown> | null;
+  profileData!: Record<string, unknown> | null;
 
   @CreateDateColumn({ type: 'timestamptz' })
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn({ type: 'timestamptz' })
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @Column({ default: true })
-  isActive: boolean;
+  isActive!: boolean;
 }

@@ -51,3 +51,13 @@ test-output
 # Next.js
 .next
 out
+
+# AI / LLM context
+CONTEXT.md
+.kilo/
+.kilocode/
+.opencode/
+.cursorrules
+.cursorignore
+ Anthropic
+.claude/

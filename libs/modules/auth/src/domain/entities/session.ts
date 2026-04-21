@@ -4,6 +4,7 @@ export interface SessionProps {
   id: string;
   accountId: string;
   refreshToken: string;
+  accessToken?: string;
   deviceInfo: string;
   ipAddress: string | null;
   userAgent: string | null;

@@ -13,45 +13,45 @@ import { AccountOrmEntity } from './account.entity';
 @Index(['refreshToken'])
 export class SessionOrmEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ type: 'uuid' })
-  accountId: string;
+  accountId!: string;
 
   @ManyToOne(() => AccountOrmEntity, (account) => account.sessions)
-  account: AccountOrmEntity;
+  account!: AccountOrmEntity;
 
   @Column({ unique: true })
-  refreshToken: string;
+  refreshToken!: string;
 
   @Column({ nullable: true })
-  accessToken: string | null;
+  accessToken!: string | null;
 
   @Column()
-  deviceInfo: string;
+  deviceInfo!: string;
 
   @Column({ nullable: true })
-  ipAddress: string | null;
+  ipAddress!: string | null;
 
   @Column({ nullable: true })
-  userAgent: string | null;
+  userAgent!: string | null;
 
   @Column({
     type: 'enum',
     enum: ['active', 'revoked', 'expired'],
     default: 'active',
   })
-  status: 'active' | 'revoked' | 'expired';
+  status!: 'active' | 'revoked' | 'expired';
 
   @Column({ type: 'timestamptz' })
-  expiresAt: Date;
+  expiresAt!: Date;
 
   @Column({ nullable: true })
-  revokedAt: Date | null;
+  revokedAt!: Date | null;
 
   @Column({ nullable: true })
-  revokedReason: string | null;
+  revokedReason!: string | null;
 
   @CreateDateColumn({ type: 'timestamptz' })
-  createdAt: Date;
+  createdAt!: Date;
 }

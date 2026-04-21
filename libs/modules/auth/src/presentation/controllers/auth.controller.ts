@@ -7,6 +7,7 @@ import {
   UnauthorizedException,
   Req,
 } from '@nestjs/common';
+import type { Request } from 'express';
 import { AuthService } from '../../application/handlers/auth.service';
 import {
   LoginDto,
@@ -15,7 +16,6 @@ import {
   SessionDto,
 } from '../../application/dto';
 import {
-  CreateAccountCommand,
   LoginCommand,
   RefreshTokenCommand,
   RevokeSessionCommand,
@@ -25,7 +25,6 @@ import {
   GetSessionsByAccountIdQuery,
   VerifyTokenQuery,
 } from '../../application/queries';
-import { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -40,8 +39,8 @@ export class AuthController {
       provider: dto.provider,
       providerId: dto.providerId,
       deviceInfo: req.headers['user-agent'] ?? 'unknown',
-      ipAddress: req.ip ?? req.socket.remoteAddress ?? null,
-      userAgent: req.headers['user-agent'] ?? null,
+      ipAddress: req.ip ?? req.socket?.remoteAddress ?? undefined,
+      userAgent: req.headers['user-agent'] ?? undefined,
     });
 
     const { tokens } = await this.authService.login(command);
