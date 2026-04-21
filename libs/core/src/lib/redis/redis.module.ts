@@ -4,8 +4,9 @@ import {
   DynamicModule,
   Type,
   ForwardReference,
+  OnModuleInit,
 } from '@nestjs/common';
-import { RedisService } from './redis.service';
+import { RedisService, RedisOptions } from './redis.service';
 import { ENV, DEFAULT_PORTS } from '@org/shared';
 
 const DEFAULT_REDIS_PORT = DEFAULT_PORTS.REDIS;
@@ -28,7 +29,20 @@ const REDIS_OPTIONS = 'REDIS_OPTIONS';
 
 @Global()
 @Module({})
-export class RedisModule {
+export class RedisModule implements OnModuleInit {
+  constructor(private readonly redisService: RedisService) {}
+
+  async onModuleInit(): Promise<void> {
+    const options: RedisOptions = {
+      host: ENV.REDIS_HOST,
+      port: ENV.REDIS_PORT ?? DEFAULT_REDIS_PORT,
+      password: ENV.REDIS_PASSWORD || undefined,
+      db: ENV.REDIS_DB,
+      lazyConnect: true,
+    };
+    await this.redisService.connect(options, 'default');
+  }
+
   static forRoot(options: RedisModuleOptions = {}): DynamicModule {
     return {
       module: RedisModule,
