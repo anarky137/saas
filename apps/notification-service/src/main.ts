@@ -1,21 +1,19 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
-
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
+import { ConfigService } from '@org/core';
+import { PORT, ENV, APP, VERSION } from '@org/shared';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
-  const port = process.env.PORT || 3000;
+  const config = app.get(ConfigService);
+  const port = config.get('NOTIFICATION_PORT') ?? PORT.NOTIFICATION;
+
+  app.setGlobalPrefix(ENV.REST_PATH);
+  app.enableCors({ origin: APP.CORS_ORIGIN, credentials: true });
+
   await app.listen(port);
-  Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`,
-  );
+  Logger.log(`🚀 Notification v${VERSION.FULL} → http://localhost:${port}/${ENV.REST_PATH}`);
 }
 
 bootstrap();

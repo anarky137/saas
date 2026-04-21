@@ -1,10 +1,22 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import {
+  ConfigModule,
+  RedisModule,
+  HealthModule,
+  AppCqrsModule,
+} from '@org/core';
+import { NotificationModule } from '@org/notification';
+import { getRedisConfig } from '@org/shared';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot(),
+    AppCqrsModule.forRoot(),
+    RedisModule.forRoot(getRedisConfig('notification:')),
+    HealthModule.forRoot({
+      enableMemory: true,
+    }),
+    NotificationModule,
+  ],
 })
 export class AppModule {}
